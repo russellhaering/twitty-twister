@@ -153,11 +153,13 @@ class Twitter(object):
         hdef.addCallback(lambda p: deferred.callback(parser(p)))
         return deferred
 
-    def update(self, status, source=None):
+    def update(self, status, in_reply_to=None, source=None):
         "Update your status.  Returns the ID of the new post."
         params={'status': status}
         if source:
             params['source'] = source
+        if in_reply_to:
+            params['in_reply_to_status_id'] = unicode(in_reply_to)
         return self.__parsed_post(self.__post("/statuses/update.xml", params),
             txml.parseUpdateResponse)
 
@@ -194,11 +196,11 @@ class Twitter(object):
         return self.__get("/direct_messages.xml", delegate, params,
                           txml.Direct, extra_args=extra_args)
 
-    def replies(self, delegate, params={}, extra_args=None):
-        """Get the most recent replies for the authenticating user.
+    def mentions(self, delegate, params={}, extra_args=None):
+        """Get the most recent mentions for the authenticating user.
 
         See search for example of how results are returned."""
-        return self.__get("/statuses/replies.atom", delegate, params,
+        return self.__get("/statuses/mentions.xml", delegate, params,
                           extra_args=extra_args)
 
     def follow(self, user):
